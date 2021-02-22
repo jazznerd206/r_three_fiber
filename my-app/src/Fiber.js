@@ -53,32 +53,33 @@ export function Box(props) {
         mesh.current.rotation.x = mesh.current.rotation.y -= 0.025;
     })
 
-    const convertToScale = (oldY, mouseX, mouseY, lightZ) => {
-        // console.log(mouseX, mouseY);
-        let upperWidthBound, upperHeightBound, newX, newY, newZ, newPosition, midH, midV;
-        upperWidthBound = window.innerWidth;
-        upperHeightBound = window.innerHeight;
-        midH = upperWidthBound / 2;
-        midV = upperHeightBound / 2;
-        let boolX = mouseX < midH || mouseX > midV;
-        let boolY = mouseY < midV || mouseY > midH;
-        newX = boolX ? mouseX / upperWidthBound * 2.3 : mouseX / upperWidthBound * -2.3;
-        newY = boolY ? mouseY / upperWidthBound * 2.3 : mouseY / upperWidthBound * -2.3;
-        console.log(newX, newY)
+    const convertToScale = (posX, posY, oldX, oldY, mouseX, mouseY, lightZ) => {
+        let newX, newY, newZ, newPosition;
+        console.log('=================')
+        console.log(oldX, oldY, mouseX, mouseY)
+        console.log('=================')
+        let xBool = oldX > mouseX;
+        let yBool = oldY > mouseY;
+        newX = xBool ? posX - .05 : posX + .05;
+        newY = yBool ? posY + .05 : posY - .05;
         newZ = lightZ;
-        // oldY < mouseY ? newZ += .05 : newZ -= .05;
-        // console.log(newPosition)
         newPosition = [newX, newY, newZ];
         return newPosition
     }
 
-    const [position, setPosition] = useState({ x: 0, y: 0 });
+    let midX = window.innerWidth / 3;
+    let midY = window.innerHeight / 3;
+
+    const [ position, setPosition ] = useState({ x: midX, y: midY });
+    const [ last, setLast ] = useState({ x: 0, y: 0 });
 
     useEffect( () => {
+        setLast({x: position.x, y: position.y})
         const setFromEvent = (e) => setPosition({ x: e.clientX, y: e.clientY });
         window.addEventListener("mousemove", setFromEvent);
+        console.log(mesh.current)
         let l = mesh.current.position;
-        let newLightPosition = convertToScale(l.y, position.x, position.y, l.z)
+        let newLightPosition = convertToScale(l.x, l.y, last.x, last.y, position.x, position.y, l.z)
         l.set(...newLightPosition);
         
         return () => {
