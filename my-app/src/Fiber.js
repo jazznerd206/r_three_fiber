@@ -54,14 +54,14 @@ export function Box(props) {
     })
 
     const convertToScale = (posX, posY, oldX, oldY, mouseX, mouseY, lightZ) => {
-        let newX, newY, newZ, newPosition;
-        console.log('=================')
-        console.log(oldX, oldY, mouseX, mouseY)
-        console.log('=================')
+        let newX, newY, newZ, newPosition, xFactor, yFactor;
         let xBool = oldX > mouseX;
         let yBool = oldY > mouseY;
-        newX = xBool ? posX - .05 : posX + .05;
-        newY = yBool ? posY + .05 : posY - .05;
+        xFactor = oldX / mouseX;
+        yFactor = oldY / mouseY;
+        console.log("FACTORS ", xFactor, yFactor)
+        newX = xBool ? posX - .02 : posX + .02;
+        newY = yBool ? posY + .02 : posY - .02;
         newZ = lightZ;
         newPosition = [newX, newY, newZ];
         return newPosition
@@ -92,15 +92,15 @@ export function Box(props) {
             position={[0, 0, 0]} 
             ref={mesh}
             castShadow={true    }
-            scale={active ? [1, 1, 1] : [1, 1, 1]}
+            scale={active ? [1.5, 1.5, 1.5] : [1, 1, 1]}
             onClick={(event) => setActive(!active)}
             onPointerOver={(event) => setHover(true)}
             onPointerOut={(event) => setHover(false)}
             >
             <boxBufferGeometry args={[1, 1, 1]} />
             <meshStandardMaterial
-                roughness={.5}
-                metalness={1.5}
+                roughness={2}
+                metalness={2}
                 color={hovered ? 'slateblue' : 'green'} />
         </mesh>
         )
@@ -156,15 +156,16 @@ export function Light({ brightness, color }) {
 
 
   // Geometry
-  export function GroundPlane() {
-    console.log(img)
-    return (
-      <mesh receiveShadow rotation={[5, 0, 10]} position={[0, -2, 0]}>
-        <planeBufferGeometry attach="geometry" args={[500, 500]} />
-        <meshStandardMaterial attach="material" color="red"/>
-      </mesh>
-    );
-  }
+export function GroundPlane() {
+  const texture = useLoader(THREE.TextureLoader, img);
+  console.log(img)
+  return (
+    <mesh receiveShadow rotation={[5, 0, 10]} position={[0, -2, 0]}>
+      <planeBufferGeometry attach="geometry" args={[500, 500]} />
+      <meshStandardMaterial attach="material" color="skyblue" map={texture}/>
+    </mesh>
+  );
+}
 export  function BackDrop() {
     return (
       <mesh receiveShadow position={[0, -5, -10]}>
